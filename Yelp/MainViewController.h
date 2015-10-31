@@ -10,4 +10,8 @@
 
 @interface MainViewController : UIViewController
 
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic, strong) NSArray *businesses;
+
 @end
