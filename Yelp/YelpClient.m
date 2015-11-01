@@ -53,6 +53,29 @@ NSString * const kYelpTokenSecret = @"mqtKIxMIR4iBtBPZCmCLEb-Dz3Y";
                      completion:completion];
 }
 
+- (AFHTTPRequestOperation *)searchWithTerm:(NSString *)term params:(NSDictionary *) params
+                                completion:(void (^)(NSArray *businesses, NSError *error))completion {
+    
+    NSDictionary *defaultParams = @{@"term": term,
+                                     @"ll" : @"37.774866,-122.394556"};
+    
+    NSMutableDictionary *allParameters = [defaultParams mutableCopy];
+    if (params) {
+        [allParameters addEntriesFromDictionary:params];
+    }
+
+    return [self GET:@"search"
+          parameters:allParameters
+             success:^(AFHTTPRequestOperation * _Nonnull operation, id  _Nonnull responseObject) {
+                 
+                 NSArray *businesses = responseObject[@"businesses"];
+                 completion([YelpBusiness businessesFromJsonArray:businesses], nil);
+                 
+             } failure:^(AFHTTPRequestOperation * _Nonnull operation, NSError * _Nonnull error) {
+                 completion(nil, error);
+             }];
+}
+
 - (AFHTTPRequestOperation *)searchWithTerm:(NSString *)term
                                   sortMode:(YelpSortMode)sortMode
                                 categories:(NSArray *)categories

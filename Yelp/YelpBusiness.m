@@ -74,6 +74,13 @@
     [[YelpClient sharedInstance] searchWithTerm:term completion:completion];
 }
 
++ (void)searchWithTerm:(NSString *)term params:(NSDictionary *)params
+            completion:(void (^)(NSArray *businesses, NSError *error))completion {
+    
+    [[YelpClient sharedInstance] searchWithTerm:term params:params completion:completion];
+}
+
+
 + (void)searchWithTerm:(NSString *)term
               sortMode:(YelpSortMode)sortMode
             categories:(NSArray *)categories

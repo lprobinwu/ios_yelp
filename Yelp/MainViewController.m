@@ -29,20 +29,7 @@
                                                          bundle:nil]
                    forCellReuseIdentifier:@"BusinessCell"];
     
-    [YelpBusiness searchWithTerm:@"Restaurants"
-                        sortMode:YelpSortModeBestMatched
-                      categories:@[@"burgers"]
-                           deals:NO
-                      completion:^(NSArray *businesses, NSError *error) {
-                          
-                          self.businesses = businesses;
-                          
-                          for (YelpBusiness *business in businesses) {
-                              NSLog(@"%@", business);
-                          }
-                          
-                          [self.tableView reloadData];
-                      }];
+    [self fetchBusinessesWithQuery:@"Restaurants" params:nil];
     
     self.tableView.estimatedRowHeight = 100;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -58,6 +45,22 @@
                                     action:@selector(onFilterButton)];
     
     self.navigationItem.leftBarButtonItem = barButtonItem;
+}
+
+- (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params {
+    [YelpBusiness searchWithTerm:@"Restaurants"
+                        params:params
+                      completion:^(NSArray *businesses, NSError *error) {
+                          
+                          self.businesses = businesses;
+                          
+                          for (YelpBusiness *business in businesses) {
+                              NSLog(@"%@", business);
+                          }
+                          
+                          [self.tableView reloadData];
+                      }];
+
 }
 
 # pragma mark - TableView Delegate Methods
@@ -86,6 +89,8 @@
 - (void) filtersViewController:(FiltersViewController *)filtersViewController didChangeFilters:(NSDictionary *)filters {
     // Fire a new network event
     NSLog(@"fire a new network event: %@", filters);
+    
+    [self fetchBusinessesWithQuery:@"Restaurants" params:filters];
 }
 
 # pragma mark - Private Methods

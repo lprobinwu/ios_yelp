@@ -26,6 +26,9 @@
 + (void)searchWithTerm:(NSString *)term
             completion:(void (^)(NSArray *businesses, NSError *error))completion;
 
++ (void)searchWithTerm:(NSString *)term params:(NSDictionary *)params
+            completion:(void (^)(NSArray *businesses, NSError *error))completion;
+
 + (void)searchWithTerm:(NSString *)term
               sortMode:(YelpSortMode)sortMode
             categories:(NSArray *)categories

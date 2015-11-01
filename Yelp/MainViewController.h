@@ -14,4 +14,6 @@
 
 @property (nonatomic, strong) NSArray *businesses;
 
+- (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params;
+
 @end
