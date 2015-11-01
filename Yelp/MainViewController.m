@@ -9,8 +9,9 @@
 #import "MainViewController.h"
 #import "YelpBusiness.h"
 #import "BusinessCell.h"
+#import "FiltersViewController.h"
 
-@interface MainViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MainViewController () <UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate>
 
 @end
 
@@ -18,6 +19,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.title = @"Yelp";
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -43,6 +46,24 @@
     
     self.tableView.estimatedRowHeight = 100;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
+    
+    [self customizeLeftNavBarButtons];
+}
+
+- (void)customizeLeftNavBarButtons {
+    UIBarButtonItem *barButtonItem =
+    [[UIBarButtonItem alloc] initWithTitle:@"Filter"
+                                     style:UIBarButtonItemStylePlain
+                                    target:self
+                                    action:@selector(onFilterButton)];
+    
+    self.navigationItem.leftBarButtonItem = barButtonItem;
+}
+
+# pragma mark - TableView Delegate Methods
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 # pragma mark - TableView DataSource Methods
@@ -50,7 +71,6 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.businesses.count;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
@@ -60,6 +80,25 @@
     
     return cell;
 }
+
+# pragma mark - Filters Delegate Methods
+
+- (void) filtersViewController:(FiltersViewController *)filtersViewController didChangeFilters:(NSDictionary *)filters {
+    // Fire a new network event
+    NSLog(@"fire a new network event: %@", filters);
+}
+
+# pragma mark - Private Methods
+
+- (void) onFilterButton {
+    FiltersViewController *filterVC = [[FiltersViewController alloc] init];
+    filterVC.delege = self;
+    
+    UINavigationController *nvc = [[UINavigationController alloc] initWithRootViewController:filterVC];
+    
+    [self presentViewController:nvc animated:YES completion:nil];
+}
+
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
