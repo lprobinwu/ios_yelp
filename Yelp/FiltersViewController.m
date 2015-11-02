@@ -66,8 +66,6 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    NSLog(@"did select row at index path: section %zd, row %zd", indexPath.section, indexPath.row);
-    
     if (indexPath.section == 1) {
         // DISTANCE
         if (self.lastSelectedDistance) {

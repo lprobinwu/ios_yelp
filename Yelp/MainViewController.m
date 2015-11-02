@@ -11,16 +11,27 @@
 #import "BusinessCell.h"
 #import "FiltersViewController.h"
 
-@interface MainViewController () <UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate>
+@interface MainViewController () <UITableViewDataSource, UITableViewDelegate, FiltersViewControllerDelegate, UISearchBarDelegate>
+
+@property (nonatomic, strong) UISearchBar *searchBar;
 
 @end
 
 @implementation MainViewController
 
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        [self customizeLeftNavBarButtons];
+        [self customizeNavBarTitleView];
+        
+        self.title = @"Yelp";
+    }
+    return self;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.title = @"Yelp";
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -29,12 +40,14 @@
                                                          bundle:nil]
                    forCellReuseIdentifier:@"BusinessCell"];
     
-    [self fetchBusinessesWithQuery:@"Restaurants" params:nil];
+    if (self.term == nil) {
+        self.term = @"Restaurants";
+    }
+    
+    [self fetchBusinessesWithQuery:self.term params:nil];
     
     self.tableView.estimatedRowHeight = 100;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
-    
-    [self customizeLeftNavBarButtons];
 }
 
 - (void)customizeLeftNavBarButtons {
@@ -47,8 +60,29 @@
     self.navigationItem.leftBarButtonItem = barButtonItem;
 }
 
+- (void)customizeNavBarTitleView {
+    self.searchBar = [[UISearchBar alloc] init];
+    self.searchBar.delegate = self;
+    self.navigationItem.titleView = self.searchBar;
+    
+    self.searchBar.searchBarStyle = UISearchBarStyleMinimal | UISearchBarStyleDefault;
+    
+    for (UIView *subView in self.searchBar.subviews) {
+        for (UIView *secondLevelSubview in subView.subviews) {
+            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
+                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
+                
+                //set font color here
+                searchBarTextField.textColor = [UIColor whiteColor];
+                
+                break;
+            }
+        }
+    }
+}
+
 - (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params {
-    [YelpBusiness searchWithTerm:@"Restaurants"
+    [YelpBusiness searchWithTerm:query
                         params:params
                       completion:^(NSArray *businesses, NSError *error) {
                           
@@ -61,6 +95,37 @@
                           [self.tableView reloadData];
                       }];
 
+}
+
+# pragma mark - UISearchBar Methods
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    NSLog(@"searchBarSearchButtonClicked %@", searchBar.text);
+    
+    self.term = searchBar.text;
+    
+    [searchBar resignFirstResponder];
+    
+    [self fetchBusinessesWithQuery:self.term params:self.filters];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [searchBar resignFirstResponder];
+}
+
+- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar {
+    CGRect r=self.view.frame;
+    r.origin.y=-44;
+    r.size.height+=44;
+    
+    self.view.frame=r;
+    
+    [searchBar setShowsCancelButton:YES animated:YES];
+}
+
+
+-(void)searchBarTextDidEndEditing:(UISearchBar *)searchBar {
+    [searchBar setShowsCancelButton:NO animated:YES];
 }
 
 # pragma mark - TableView Delegate Methods
@@ -87,9 +152,9 @@
 # pragma mark - Filters Delegate Methods
 
 - (void) filtersViewController:(FiltersViewController *)filtersViewController didChangeFilters:(NSDictionary *)filters {
-    // TODO save the filters here
+    self.filters = filters;
     
-    [self fetchBusinessesWithQuery:@"Restaurants" params:filters];
+    [self fetchBusinessesWithQuery:self.term params:filters];
 }
 
 # pragma mark - Private Methods
