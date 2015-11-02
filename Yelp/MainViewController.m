@@ -39,7 +39,7 @@
 
 - (void)customizeLeftNavBarButtons {
     UIBarButtonItem *barButtonItem =
-    [[UIBarButtonItem alloc] initWithTitle:@"Filter"
+    [[UIBarButtonItem alloc] initWithTitle:@"Filters"
                                      style:UIBarButtonItemStylePlain
                                     target:self
                                     action:@selector(onFilterButton)];
@@ -87,8 +87,7 @@
 # pragma mark - Filters Delegate Methods
 
 - (void) filtersViewController:(FiltersViewController *)filtersViewController didChangeFilters:(NSDictionary *)filters {
-    // Fire a new network event
-    NSLog(@"fire a new network event: %@", filters);
+    // TODO save the filters here
     
     [self fetchBusinessesWithQuery:@"Restaurants" params:filters];
 }

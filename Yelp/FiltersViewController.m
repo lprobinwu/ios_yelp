@@ -12,8 +12,13 @@
 @interface FiltersViewController () <UITableViewDataSource, UITableViewDelegate, SwitchCellDelegate>
 
 @property(nonatomic, strong) NSMutableSet *selectedCategories;
+@property(nonatomic) BOOL isDealOn;
+@property(nonatomic, strong) NSNumber *selectedDistance;
+@property(nonatomic, strong) NSNumber *selectedSorting;
 
 - (void) initCategories;
+- (void) initSortings;
+- (void) initDistances;
 
 @end
 
@@ -23,7 +28,15 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     
     if (self) {
+        self.title = @"Filters";
+        
+        [self customizeLeftNavBarButtons];
+        [self customizeRightNavBarButtons];
+        
         self.selectedCategories = [NSMutableSet set];
+        
+        [self initDistances];
+        [self initSortings];
         [self initCategories];
     }
     
@@ -34,9 +47,6 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    [self customizeLeftNavBarButtons];
-    [self customizeRightNavBarButtons];
-
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     
@@ -51,22 +61,111 @@
     // Dispose of any resources that can be recreated.
 }
 
+# pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    NSLog(@"did select row at index path: section %zd, row %zd", indexPath.section, indexPath.row);
+    
+    if (indexPath.section == 1) {
+        // DISTANCE
+        if (self.lastSelectedDistance) {
+            UITableViewCell *lastCell = [tableView cellForRowAtIndexPath:self.lastSelectedDistance];
+            [lastCell setAccessoryType:UITableViewCellAccessoryNone];
+        }
+        
+        self.selectedDistance = (NSNumber *) self.distances[indexPath.row][@"value"];
+        self.lastSelectedDistance = indexPath;
+        [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+        
+    } else if (indexPath.section == 2) {
+        // SORT BY
+        if (self.lastSelectedSorting) {
+            UITableViewCell *lastCell = [tableView cellForRowAtIndexPath:self.lastSelectedSorting];
+            [lastCell setAccessoryType:UITableViewCellAccessoryNone];
+        }
+        self.selectedSorting = (NSNumber *) self.sortings[indexPath.row][@"value"];
+        self.lastSelectedSorting = indexPath;
+        [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [tableView cellForRowAtIndexPath:indexPath].accessoryType = UITableViewCellAccessoryNone;
+}
+
 # pragma mark - TableView DataSource Methods
 
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return 4;
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    NSString *sectionName;
+    switch (section) {
+        case 0:
+            sectionName = @"Deal";
+            break;
+        case 1:
+            sectionName = @"Distance";
+            break;
+        case 2:
+            sectionName = @"Sort By";
+            break;
+        default:
+            sectionName = @"Category";
+            break;
+    }
+    return sectionName;
+}
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.categories.count;
+    switch (section) {
+        case 0:
+            return 1;
+        case 1:
+            return self.distances.count;
+        case 2:
+            return self.sortings.count;
+        default:
+            return self.categories.count;
+    }
+
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *cellIdentifier = @"SwitchCell";
-    SwitchCell *cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+    UITableViewCell *cell1 = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     
-    cell.titleLabel.text = self.categories[indexPath.row][@"name"];
-    cell.on = [self.selectedCategories containsObject:self.categories[indexPath.row]];
-    cell.delegate = self;
+    NSLog(@"section: %zd, row %zd", indexPath.section, indexPath.row);
+    cell1.textLabel.text = [NSString stringWithFormat:@"section: %zd, row %zd", indexPath.section, indexPath.row];
     
-    return cell;
-
+    if (indexPath.section == 0) {
+        cell1.textLabel.text = @"Offering a Deal";
+        
+        UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
+        cell1.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell1.accessoryView = switchView;
+        [switchView setTag:indexPath.row];
+        [switchView addTarget:self action:@selector(onFilterForMostPopular:) forControlEvents:UIControlEventValueChanged];
+        
+    } else if (indexPath.section == 1) {
+        cell1.textLabel.text = self.distances[indexPath.row][@"name"];
+    } else if (indexPath.section == 2) {
+        cell1.textLabel.text = self.sortings[indexPath.row][@"name"];
+    } else {
+        // 3
+        static NSString *cellIdentifier = @"SwitchCell";
+        SwitchCell *cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        
+        cell.titleLabel.text = self.categories[indexPath.row][@"name"];
+        cell.on = [self.selectedCategories containsObject:self.categories[indexPath.row]];
+        cell.delegate = self;
+        
+        return cell;
+    }
+    
+    return cell1;
 }
 
 # pragma mark - Switch Cell Delegate Methods
@@ -94,6 +193,16 @@
         NSString *categoryFilter = [names componentsJoinedByString:@","];
         [filters setObject:categoryFilter forKey:@"category_filter"];
     }
+    
+    if (self.selectedDistance != nil) {
+        [filters setObject:self.selectedDistance forKey:@"radius_filter"];
+    }
+    
+    if (self.selectedSorting != nil) {
+        [filters setObject:self.selectedSorting forKey:@"sort"];
+    }
+    
+    [filters setObject:[NSNumber numberWithBool:self.isDealOn] forKey:@"deals_filter"];
     
     return filters;
 }
@@ -130,7 +239,31 @@
     [self.delege filtersViewController:self didChangeFilters:self.filters];
     
     [self dismissViewControllerAnimated:YES completion:nil];
-    
+}
+
+- (void)onFilterForMostPopular:(id)sender
+{
+    NSLog(@"on handling most popular");
+    UISwitch *switchControl = (UISwitch *)sender;
+    self.isDealOn = [switchControl isOn];
+}
+
+- (void) initDistances {
+    self.distances = @[
+                       @{@"name": @"Auto",      @"value": [NSNumber numberWithFloat:40000]},
+                       @{@"name": @"0.3 miles", @"value": [NSNumber numberWithFloat:482.803]},
+                       @{@"name": @"1 mile",    @"value": [NSNumber numberWithFloat:1609.34]},
+                       @{@"name": @"5 miles",   @"value": [NSNumber numberWithFloat:8046.72]},
+                       @{@"name": @"20 miles",  @"value": [NSNumber numberWithFloat:32186.9]}
+                       ];
+}
+
+- (void) initSortings {
+    self.sortings = @[
+                     @{@"name": @"Best Match",    @"value": [NSNumber numberWithInt:0]},
+                     @{@"name": @"Distance",      @"value": [NSNumber numberWithInt:1]},
+                     @{@"name": @"Rating",        @"value": [NSNumber numberWithInt:2]}
+                     ];
 }
 
 - (void) initCategories {

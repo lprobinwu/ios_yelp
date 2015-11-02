@@ -15,14 +15,14 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EPD-4m-vwR">
-                        <rect key="frame" x="263" y="6" width="51" height="31"/>
+                        <rect key="frame" x="255" y="6" width="51" height="31"/>
                         <animations/>
                         <connections>
                             <action selector="switchValueChanged:" destination="KGk-i7-Jjw" eventType="valueChanged" id="vH0-eH-Dyy"/>
                         </connections>
                     </switch>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jQJ-rj-a8s">
-                        <rect key="frame" x="8" y="11.5" width="247" height="20.5"/>
+                        <rect key="frame" x="16" y="11.5" width="231" height="20.5"/>
                         <animations/>
                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -34,9 +34,9 @@
                     <constraint firstItem="jQJ-rj-a8s" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="C9a-zG-aIy"/>
                     <constraint firstItem="EPD-4m-vwR" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="6" id="FSI-wD-AAl"/>
                     <constraint firstAttribute="bottom" secondItem="EPD-4m-vwR" secondAttribute="bottom" constant="6" id="e7T-G9-WyE"/>
-                    <constraint firstItem="jQJ-rj-a8s" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="8" id="iq9-GU-ZbI"/>
+                    <constraint firstItem="jQJ-rj-a8s" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="16" id="iq9-GU-ZbI"/>
                     <constraint firstItem="EPD-4m-vwR" firstAttribute="leading" secondItem="jQJ-rj-a8s" secondAttribute="trailing" constant="8" id="qam-8X-DGQ"/>
-                    <constraint firstAttribute="trailing" secondItem="EPD-4m-vwR" secondAttribute="trailing" constant="8" id="s3d-cM-uu8"/>
+                    <constraint firstAttribute="trailing" secondItem="EPD-4m-vwR" secondAttribute="trailing" constant="16" id="s3d-cM-uu8"/>
                 </constraints>
             </tableViewCellContentView>
             <animations/>
