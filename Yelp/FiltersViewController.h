@@ -21,18 +21,4 @@
 
 @property (nonatomic, weak) id<FiltersViewControllerDelegate> delege;
 
-@property (nonatomic, readonly) NSDictionary *filters;
-
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-@property(nonatomic, strong) NSArray *categories;
-
-@property(nonatomic, strong) NSArray *distances;
-
-@property(nonatomic, strong) NSArray *sortings;
-
-@property(nonatomic, strong) NSIndexPath *lastSelectedDistance;
-
-@property(nonatomic, strong) NSIndexPath *lastSelectedSorting;
-
 @end

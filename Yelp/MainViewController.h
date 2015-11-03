@@ -10,14 +10,4 @@
 
 @interface MainViewController : UIViewController
 
-@property (weak, nonatomic) IBOutlet UITableView *tableView;
-
-@property (nonatomic, strong) NSArray *businesses;
-
-@property (nonatomic, strong) NSDictionary *filters;
-
-@property (nonatomic, strong) NSString *term;
-
-- (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params;
-
 @end

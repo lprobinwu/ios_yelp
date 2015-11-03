@@ -15,6 +15,17 @@
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+
+@property (nonatomic, strong) NSArray *businesses;
+
+@property (nonatomic, strong) NSDictionary *filters;
+
+@property (nonatomic, strong) NSString *term;
+
+- (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params;
+
+
 @end
 
 @implementation MainViewController
@@ -32,6 +43,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    UIColor *navigationBarTintColor = [UIColor colorWithRed:192/255.0 green:25/255.0 blue:0 alpha:1];
+    [self.navigationController.navigationBar setBarTintColor:navigationBarTintColor];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    self.navigationController.navigationBar.translucent = NO;
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -67,18 +85,8 @@
     
     self.searchBar.searchBarStyle = UISearchBarStyleMinimal | UISearchBarStyleDefault;
     
-    for (UIView *subView in self.searchBar.subviews) {
-        for (UIView *secondLevelSubview in subView.subviews) {
-            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
-                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
-                
-                //set font color here
-                searchBarTextField.textColor = [UIColor whiteColor];
-                
-                break;
-            }
-        }
-    }
+    [[UITextField appearanceWhenContainedIn:[UISearchBar class], nil] setDefaultTextAttributes:@{NSForegroundColorAttributeName:[UIColor whiteColor]}];
+
 }
 
 - (void) fetchBusinessesWithQuery:(NSString *) query params:(NSDictionary *)params {

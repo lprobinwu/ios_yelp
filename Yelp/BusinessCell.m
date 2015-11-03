@@ -9,6 +9,24 @@
 #import "BusinessCell.h"
 #import "UIImageView+AFNetworking.h"
 
+@interface BusinessCell()
+
+@property (weak, nonatomic) IBOutlet UIImageView *thumbImageView;
+
+@property (weak, nonatomic) IBOutlet UILabel *nameLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *distanceLabel;
+
+@property (weak, nonatomic) IBOutlet UIImageView *ratingImageView;
+
+@property (weak, nonatomic) IBOutlet UILabel *ratingLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *addressLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *categoryLabel;
+
+@end
+
 @implementation BusinessCell
 
 - (void)awakeFromNib {

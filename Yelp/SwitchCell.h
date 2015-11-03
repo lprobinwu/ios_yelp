@@ -20,11 +20,7 @@
 
 @interface SwitchCell : UITableViewCell
 
-@property (weak, nonatomic) IBOutlet UISwitch *toggleSwitch;
-
 @property (weak, nonatomic) IBOutlet UILabel *titleLabel;
-
-- (IBAction)switchValueChanged:(id)sender;
 
 @property(nonatomic, assign) BOOL on;
 

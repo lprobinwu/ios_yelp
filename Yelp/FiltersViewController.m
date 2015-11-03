@@ -20,6 +20,16 @@
 - (void) initSortings;
 - (void) initDistances;
 
+@property (nonatomic, readonly) NSDictionary *filters;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property(nonatomic, strong) NSArray *categories;
+@property(nonatomic, strong) NSArray *distances;
+@property(nonatomic, strong) NSArray *sortings;
+
+@property(nonatomic, strong) NSIndexPath *lastSelectedDistance;
+@property(nonatomic, strong) NSIndexPath *lastSelectedSorting;
+
+
 @end
 
 @implementation FiltersViewController
@@ -46,6 +56,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    
+    UIColor *navigationBarTintColor = [UIColor colorWithRed:192/255.0 green:25/255.0 blue:0 alpha:1];
+    [self.navigationController.navigationBar setBarTintColor:navigationBarTintColor];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
+    [self.navigationController.navigationBar setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    self.navigationController.navigationBar.translucent = NO;
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -133,37 +150,36 @@
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    UITableViewCell *cell1 = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    UITableViewCell *cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
     
-    NSLog(@"section: %zd, row %zd", indexPath.section, indexPath.row);
-    cell1.textLabel.text = [NSString stringWithFormat:@"section: %zd, row %zd", indexPath.section, indexPath.row];
+    cell.textLabel.text = [NSString stringWithFormat:@"section: %zd, row %zd", indexPath.section, indexPath.row];
     
     if (indexPath.section == 0) {
-        cell1.textLabel.text = @"Offering a Deal";
+        cell.textLabel.text = @"Offering a Deal";
         
         UISwitch *switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
-        cell1.selectionStyle = UITableViewCellSelectionStyleNone;
-        cell1.accessoryView = switchView;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.accessoryView = switchView;
         [switchView setTag:indexPath.row];
         [switchView addTarget:self action:@selector(onFilterForMostPopular:) forControlEvents:UIControlEventValueChanged];
         
     } else if (indexPath.section == 1) {
-        cell1.textLabel.text = self.distances[indexPath.row][@"name"];
+        cell.textLabel.text = self.distances[indexPath.row][@"name"];
     } else if (indexPath.section == 2) {
-        cell1.textLabel.text = self.sortings[indexPath.row][@"name"];
+        cell.textLabel.text = self.sortings[indexPath.row][@"name"];
     } else {
         // 3
         static NSString *cellIdentifier = @"SwitchCell";
-        SwitchCell *cell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
+        SwitchCell *switchCell = [self.tableView dequeueReusableCellWithIdentifier:cellIdentifier];
         
-        cell.titleLabel.text = self.categories[indexPath.row][@"name"];
-        cell.on = [self.selectedCategories containsObject:self.categories[indexPath.row]];
-        cell.delegate = self;
+        switchCell.titleLabel.text = self.categories[indexPath.row][@"name"];
+        switchCell.on = [self.selectedCategories containsObject:self.categories[indexPath.row]];
+        switchCell.delegate = self;
         
-        return cell;
+        return switchCell;
     }
     
-    return cell1;
+    return cell;
 }
 
 # pragma mark - Switch Cell Delegate Methods

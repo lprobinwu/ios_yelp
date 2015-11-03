@@ -8,6 +8,15 @@
 
 #import "SwitchCell.h"
 
+@interface SwitchCell()
+
+@property (weak, nonatomic) IBOutlet UISwitch *toggleSwitch;
+
+- (IBAction)switchValueChanged:(id)sender;
+
+@end
+
+
 @implementation SwitchCell
 
 - (void)awakeFromNib {
